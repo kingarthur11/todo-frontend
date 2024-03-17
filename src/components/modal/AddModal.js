@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from "axios";
 
-const AddModal = ({ closeModal }) => {
+const AddModal = ({ closeModal, getTodos }) => {
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -9,20 +9,20 @@ const AddModal = ({ closeModal }) => {
     });
 
     const onInputChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        const limitedValue = name === 'description' ? value.split(/\s+/).slice(0, 15).join(' ') : value;
+        setFormData({ ...formData, [name]: limitedValue });
     };
 
     const onFormSubmit = async (e) => {
         e.preventDefault();
         console.log(formData);
         try {
-            const response = await axios.post('http://localhost:7000/api/todo/create', formData);
-            if (!response.ok) {
-                throw new Error('Failed to save data');
-            }
-            console.log('Data saved successfully');
+            await axios.post('http://localhost:7000/api/todo/create', formData);
+            getTodos()
             closeModal();
         } catch (error) {
+            closeModal();
             console.error('Error:', error.message);
         }
     };
@@ -38,13 +38,13 @@ const AddModal = ({ closeModal }) => {
                     <form onSubmit={onFormSubmit}>
                         <div className="modal-body">
                             <div className="mb-3">
-                                <input onChange={(e) => onInputChange(e)} name="name" type="text" className="form-control" placeholder="Task name" />
+                                <input value={formData.name} onChange={(e) => onInputChange(e)} name="name" type="text" className="form-control" placeholder="Task name" />
                             </div>
                             <div className="mb-3">
-                                <input onChange={(e) => onInputChange(e)} name="description" type="text" className="form-control" placeholder="Little description" />
+                                <textarea value={formData.description} className="form-control" onChange={(e) => onInputChange(e)} name="description" rows="3" placeholder="Little description"></textarea>
                             </div>
                             <div className="mb-3">
-                                <select onChange={(e) => onInputChange(e)} name="category" className="form-select" aria-label="Default select example">
+                                <select value={formData.category} onChange={(e) => onInputChange(e)} name="category" className="form-select" aria-label="Default select example">
                                     <option>Category</option>
                                     <option value="work">Work</option>
                                     <option value="meeting">Meeting</option>

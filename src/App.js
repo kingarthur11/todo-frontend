@@ -6,13 +6,31 @@ import EditModal from './components/modal/EditModal';
 import axios from "axios";
 
 function App() {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [todoId, setTodoId] = useState(0);
+  const [todo, setTodo] = useState(0);
+
+  
   const [formData, setFormData] = useState([])
-    const openModal = () => {
-        setModalVisible(true);
+    const openModal = (value, id) => {
+      if (value === 'add') {
+        setAddModalVisible(true);
+      }
+      if (value === 'edit') {
+        id > 1 ? setTodoId(id) : 0
+        setEditModalVisible(true);
+      } 
+      if (value === 'delete') {
+        id > 1 ? setTodoId(id) : 0
+        setDeleteModalVisible(true);
+      } 
     };
     const closeModal = () => {
-        setModalVisible(false);
+      setAddModalVisible(false);
+      setEditModalVisible(false);
+      setDeleteModalVisible(false);
     };
     const getTodos = async () => {
         try {
@@ -24,23 +42,35 @@ function App() {
             console.error('Error:', error.message);
         }
     };
-    console.log(formData)
-    useEffect(() => {
-      getTodos()
-    }, []);
+    const getTodo = async () => {
+      try {
+          const response = await axios.get(`http://localhost:7000/api/todo/getone/${todoId}`);
+          const { data } = response
+          setTodo(data.todo)
+          console.log(data)
+      } catch (error) {
+          console.error('Error:', error.message);
+      }
+  };
+  useEffect(() => {
+    getTodos()
+  }, []);
+  useEffect(() => {
+    todoId > 1 ? getTodo(todoId) : 0
+  }, [todoId]);
 
   return (
     <div className='brg-color'>
       <div className="d-flex align-items-center justify-content-between container">
         <h3>Todo List</h3>
-        <button onClick={openModal} type="button" class="add-btn">
-          Add Todo <i class="bi bi-plus-circle"></i>
+        <button onClick={() => openModal('add')} type="button" className="add-btn">
+          Add Todo <i className="bi bi-plus-circle"></i>
         </button>
       </div>
       
-     {modalVisible && <AddModal closeModal={closeModal} />}
-     <DeleteModal />
-     <EditModal />
+     {addModalVisible && <AddModal closeModal={closeModal} getTodos={getTodos} />}
+     {editModalVisible && <EditModal closeModal={closeModal} todoId={todoId} todo={todo} getTodos={getTodos}/>}
+     {deleteModalVisible && <DeleteModal closeModal={closeModal} todoId={todoId} todo={todo} getTodos={getTodos} />}
       <div className='container py-3'>
         <div className='row'>
           <div className='col-8'>
@@ -54,97 +84,86 @@ function App() {
       </div>
       
       <div className='list-cards container'>
-        <div class="card h-100 border-work mb-3" >
-          <div class="card-body card-text">
-            <div className='d-flex justify-content-between'>
-              <p className='card-work'>Work <i class="bi bi-briefcase"></i></p>
-              <div class="btn-group dropright">
-                <i class="bi bi-three-dots"  type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
-                <div class="dropdown-menu p-3">
-                  <p class="dropdown-item py-1 m-0">Todo <i class="bi bi-clock"></i></p>
-                  <p class="dropdown-item py-1 m-0">In-progress <i class="bi bi-clipboard-data"></i></p>
-                  <p class="dropdown-item py-1 m-0">Completed <i class="bi bi-check2-circle"></i></p>
+      {formData && formData.map(
+        (content, index) => (
+          <div key={index}>
+            {
+              content?.category === 'work' ?
+              <>
+                <div className="card h-100 border-work mb-3">
+                  <div className="card-body card-text">
+                    <div className='d-flex justify-content-between'>
+                      <p className='card-work'>Work <i className="bi bi-briefcase"></i></p>
+                      <div className="btn-group dropright">
+                        <i className="bi bi-three-dots"  type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+                        <div className="dropdown-menu p-3">
+                          <p className="dropdown-item py-1 m-0">Todo <i className="bi bi-clock"></i></p>
+                          <p className="dropdown-item py-1 m-0">In-progress <i className="bi bi-clipboard-data"></i></p>
+                          <p className="dropdown-item py-1 m-0">Completed <i className="bi bi-check2-circle"></i></p>
+                        </div>
+                      </div>
+                    </div>
+                    <h5 className="card-title">{content?.name}</h5>
+                    <p className="card-text">{content?.description}</p>
+                  </div>
+                  <div className="card-footer bg-transparent border-meeting d-flex justify-content-between">
+                    <i className="bi bi-pencil" onClick={() => openModal('edit', content?._id)}></i>
+                    <i className="bi bi-trash" onClick={() => openModal('delete', content?._id)}></i>
+                  </div>
+                </div>
+              </>
+             : content?.category === 'learning' ? 
+             <>
+              <div className="card h-100 border-learning mb-3">
+                <div className="card-body card-text">
+                  <div className='d-flex justify-content-between'>
+                    <p className='card-learning'>Learning <i className="bi bi-people"></i></p>
+                    <div className="btn-group dropright">
+                      <i className="bi bi-three-dots"  type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+                      <div className="dropdown-menu p-3">
+                        <p className="dropdown-item py-1 m-0">Todo <i className="bi bi-clock"></i></p>
+                        <p className="dropdown-item py-1 m-0">In-progress <i className="bi bi-clipboard-data"></i></p>
+                        <p className="dropdown-item py-1 m-0">Completed <i className="bi bi-check2-circle"></i></p>
+                      </div>
+                    </div>
+                  </div>
+                  <h5 className="card-title">{content?.name}</h5>
+                  <p className="card-text">{content?.description}</p>
+                </div>
+                <div className="card-footer bg-transparent border-meeting d-flex justify-content-between">
+                  <i className="bi bi-pencil" onClick={() => openModal('edit', content?._id)}></i>
+                  <i className="bi bi-trash" onClick={() => openModal('delete', content?._id)}></i>
                 </div>
               </div>
-            </div>
-            <h5 class="card-title">Success card title</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+             </>
+             : 
+             <>
+              <div className="card h-100 border-meeting mb-3">
+                <div className="card-body card-text">
+                  <div className='d-flex justify-content-between'>
+                    <p className='card-meeting'>Meeting <i className="bi bi-people"></i></p>
+                    <div className="btn-group dropright">
+                      <i className="bi bi-three-dots"  type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+                      <div className="dropdown-menu p-3">
+                        <p className="dropdown-item py-1 m-0">Todo <i className="bi bi-clock"></i></p>
+                        <p className="dropdown-item py-1 m-0">In-progress <i className="bi bi-clipboard-data"></i></p>
+                        <p className="dropdown-item py-1 m-0">Completed <i className="bi bi-check2-circle"></i></p>
+                      </div>
+                    </div>
+                  </div>
+                  <h5 className="card-title">{content?.name}</h5>
+                  <p className="card-text">{content?.description}</p>
+                </div>
+                <div className="card-footer bg-transparent border-meeting d-flex justify-content-between">
+                  <i className="bi bi-pencil" onClick={() => openModal('edit', content?._id)}></i>
+                  <i className="bi bi-trash" onClick={() => openModal('delete', content?._id)}></i>
+                </div>
+              </div>
+             </>
+            }
           </div>
-          <div class="card-footer bg-transparent border-meeting d-flex justify-content-between">
-            <i class="bi bi-pencil" data-bs-toggle="modal" data-bs-target="#editModal"></i>
-            <i class="bi bi-trash"  data-bs-toggle="modal" data-bs-target="#deleteModal"></i>
-          </div>
-        </div>
-        {/* <div class="card h-100 border-meeting mb-3" >
-          <div class="card-body card-text">
-            <div className='d-flex justify-content-between'>
-              <p className='card-meeting'>Meeting <i class="bi bi-people"></i></p>
-              <i class="bi bi-three-dots"></i>
-            </div>
-            <h5 class="card-title">meeting card title</h5>
-            <p class="card-text">Some quick example text to build on the card title</p>
-          </div>
-          <div class="card-footer bg-transparent border-meeting d-flex justify-content-between">
-            <i class="bi bi-pencil"></i>
-            <i class="bi bi-trash"></i>
-          </div>
-        </div> */}
-        {/* <div class="card h-100 border-work mb-3" >
-          <div class="card-body card-text">
-            <div className='d-flex justify-content-between'>
-              <p className='card-work'>Work <i class="bi bi-briefcase"></i></p>
-              <i class="bi bi-three-dots"></i>
-            </div>
-            <h5 class="card-title">Success card title</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          </div>
-          <div class="card-footer bg-transparent border-meeting d-flex justify-content-between">
-            <i class="bi bi-pencil"></i>
-            <i class="bi bi-trash"></i>
-          </div>
-        </div>
-        <div class="card h-100 border-work mb-3" >
-          <div class="card-body card-text">
-            <div className='d-flex justify-content-between'>
-              <p className='card-work'>Work <i class="bi bi-briefcase"></i></p>
-              <i class="bi bi-three-dots"></i>
-            </div>
-            <h5 class="card-title">Success card title</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          </div>
-          <div class="card-footer bg-transparent border-meeting d-flex justify-content-between">
-            <i class="bi bi-pencil"></i>
-            <i class="bi bi-trash"></i>
-          </div>
-        </div>
-        <div class="card h-100 border-learning mb-3" >
-          <div class="card-body card-text">
-            <div className='d-flex justify-content-between'>
-              <p className='card-learning'>Learning <i class="bi bi-book"></i></p>
-              <i class="bi bi-three-dots"></i>
-            </div>
-            <h5 class="card-title">Success card title</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          </div>
-          <div class="card-footer bg-transparent border-meeting d-flex justify-content-between">
-            <i class="bi bi-pencil"></i>
-            <i class="bi bi-trash"></i>
-          </div>
-        </div>
-        <div class="card h-100 border-work mb-3" >
-          <div class="card-body card-text">
-            <div className='d-flex justify-content-between'>
-              <p className='card-work'>Work <i class="bi bi-briefcase"></i></p>
-              <i class="bi bi-three-dots"></i>
-            </div>
-            <h5 class="card-title">Success card title</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          </div>
-          <div class="card-footer bg-transparent border-meeting d-flex justify-content-between">
-            <i class="bi bi-pencil"></i>
-            <i class="bi bi-trash"></i>
-          </div>
-        </div> */}
+        )
+      )}
       </div>
     </div>
   );
