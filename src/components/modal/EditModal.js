@@ -21,7 +21,6 @@ const EditModal = ({ closeModal, todoId, todo, getTodos }) => {
     };
 
     const onFormSubmit = async (e) => {
-        // closeModal();
         e.preventDefault();
         console.log(formData);
         try {

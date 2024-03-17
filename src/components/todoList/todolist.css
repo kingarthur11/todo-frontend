@@ -1,13 +1,16 @@
 .brg-color {
-  /* color: #fff; */
   padding: 50px 0;
   min-height: 100vh;
   background: linear-gradient(90deg, hsla(213, 77%, 14%, 1) 0%, hsla(202, 27%, 45%, 1) 100%);
+}
+.header-text {
+  color: #95d5b2;
 }
 .todo, .progres, .complete {
   background-color: #243748;
   color: #fff;
   padding: 10px 40px 10px 15px;
+  cursor: pointer;
 }
 .todo {
   border-left: 3px solid #df2935;
