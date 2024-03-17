@@ -1,20 +1,33 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './App.css';
 import AddModal from './components/modal/AddModal';
 import DeleteModal from './components/modal/DeleteModal';
 import EditModal from './components/modal/EditModal';
-
+import axios from "axios";
 
 function App() {
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [formData, setFormData] = useState([])
     const openModal = () => {
         setModalVisible(true);
     };
-
     const closeModal = () => {
         setModalVisible(false);
     };
+    const getTodos = async () => {
+        try {
+            const response = await axios.get('http://localhost:7000/api/todo/getall');
+            const { data } = response
+            setFormData(data.todo)
+            // closeModal();
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+    };
+    console.log(formData)
+    useEffect(() => {
+      getTodos()
+    }, []);
 
   return (
     <div className='brg-color'>
