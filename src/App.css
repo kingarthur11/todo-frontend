@@ -1,38 +1,116 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+.brg-color {
+  /* color: #fff; */
+  padding: 50px 0;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  background: linear-gradient(90deg, hsla(213, 77%, 14%, 1) 0%, hsla(202, 27%, 45%, 1) 100%);
+}
+.todo, .progres, .complete {
+  background-color: #243748;
+  color: #fff;
+  padding: 10px 40px 10px 15px;
+}
+.todo {
+  border-left: 3px solid #df2935;
+}
+.progres {
+  border-left: 3px solid #fdca40;
+}
+.complete {
+  border-left: 3px solid #7ae582;
+}
+.dropdown-menu {
+  background: #243748;
+  border: solid 1px #95d5b2;
+  color: #fff;
+}
+.dropdown-item {
+  color: #7ae582;
+  font-size: 13px;
+  font-weight: 600;
+}
+.dropdown-item:hover {
+  color: #7ae582;
+  background-color: #243748;
+  cursor: pointer;
+}
+.card {
+  background-color: #243748;
+  color: #333333;
+}
+.bi-trash {
+  color: #df2935;
+  cursor: pointer;
+}
+.bi-pencil {
+  color: #7ae582;
+  cursor: pointer;
+}
+.card-text {
+  color: #fff;
+}
+.border-work {
+  border: #7ae582 1px solid;
+}
+.card-work {
+  border: #7ae582 1px solid;
+  color: #7ae582;
+  padding: 8px;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.card-footer-work {
+  color: #7ae582;
+}
+.border-meeting {
+  border: #ccff33 1px solid;
+}
+.card-meeting {
+  border: #ccff33 1px solid;
+  color: #ccff33;
+  padding: 8px;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.card-footer-meeting {
+  color: #ccff33;
+}
+.border-learning {
+  border: #a6e1fa 1px solid;
+}
+.card-learning {
+  border: #a6e1fa 1px solid;
+  color: #a6e1fa;
+  padding: 8px;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.card-footer-learning {
+  color: #a6e1fa;
+}
+.card-title {
+  color: #e0e1dd;
+}
+.add-btn {
+  outline: none;
+  border: none;
+  color: #fff;
+  background-color: #243748;
+  padding: 10px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-.App-link {
-  color: #61dafb;
+.list-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.card {
+  /* border: 2px solid #089803; */
+  /* margin: 5px 0; */
+  max-width: 18rem;
 }
