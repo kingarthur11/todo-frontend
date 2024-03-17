@@ -3,7 +3,7 @@
   min-height: 100vh;
   background: linear-gradient(90deg, hsla(213, 77%, 14%, 1) 0%, hsla(202, 27%, 45%, 1) 100%);
 }
-.header-text {
+.header-text, h3 {
   color: #95d5b2;
 }
 .todo, .progres, .complete {
