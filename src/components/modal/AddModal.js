@@ -1,24 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from "axios";
+import FormValidation, { validate } from "./FormValidation";
+import './styleModal.css'
 
 const AddModal = ({ closeModal, getTodos }) => {
-    const [formData, setFormData] = useState({
-        name: "",
-        description: "",
-        category: "",
-    });
+    const { errors, values, onInputChange, handleSubmit, isSubmitted } =
+            FormValidation(validate);
 
-    const onInputChange = (e) => {
-        const { name, value } = e.target;
-        const limitedValue = name === 'description' ? value.split(/\s+/).slice(0, 15).join(' ') : value;
-        setFormData({ ...formData, [name]: limitedValue });
-    };
-
-    const onFormSubmit = async (e) => {
-        e.preventDefault();
-        console.log(formData);
+    const onFormSubmit = async (obj) => {
         try {
-            await axios.post('http://localhost:7000/api/todo/create', formData);
+            await axios.post('http://localhost:7000/api/todo/create', obj);
             getTodos()
             closeModal();
         } catch (error) {
@@ -26,6 +17,12 @@ const AddModal = ({ closeModal, getTodos }) => {
             console.error('Error:', error.message);
         }
     };
+
+    useEffect(() => {
+        if (Object.keys(errors).length == 0 && isSubmitted) {
+          onFormSubmit(values);
+        }
+      }, [errors]);
 
     return (
         <div tabIndex="-1" style={{ display: "block" }} className="modal fade show" id="addModal" aria-labelledby="exampleModalLabel" aria-hidden="false">
@@ -35,21 +32,36 @@ const AddModal = ({ closeModal, getTodos }) => {
                         <h5 className="modal-title">Add Task</h5>
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={closeModal}></button>
                     </div>
-                    <form onSubmit={onFormSubmit}>
+                    <form onSubmit={handleSubmit}>
                         <div className="modal-body">
                             <div className="mb-3">
-                                <input value={formData.name} onChange={(e) => onInputChange(e)} name="name" type="text" className="form-control" placeholder="Task name" />
+                                <input value={values.name} onChange={(e) => onInputChange(e)} name="name" type="text" className="form-control" placeholder="Task name" />
+                                {errors && errors.name ? (
+                                    <div className="style-error">{errors.name}</div>
+                                    ) : (
+                                    <div className=""></div>
+                                    )}
                             </div>
                             <div className="mb-3">
-                                <textarea value={formData.description} className="form-control" onChange={(e) => onInputChange(e)} name="description" rows="3" placeholder="Little description"></textarea>
+                                <textarea value={values.description} className="form-control" onChange={(e) => onInputChange(e)} name="description" rows="3" placeholder="Little description"></textarea>
+                                {errors && errors.description ? (
+                                    <div className="style-error">{errors.description}</div>
+                                    ) : (
+                                    <div className=""></div>
+                                    )}
                             </div>
                             <div className="mb-3">
-                                <select value={formData.category} onChange={(e) => onInputChange(e)} name="category" className="form-select" aria-label="Default select example">
+                                <select value={values.category} onChange={(e) => onInputChange(e)} name="category" className="form-select" aria-label="Default select example">
                                     <option>Category</option>
                                     <option value="work">Work</option>
                                     <option value="meeting">Meeting</option>
                                     <option value="learning">Learning</option>
                                 </select>
+                                {errors && errors.category ? (
+                                    <div className="style-error">{errors.category}</div>
+                                    ) : (
+                                    <div className=""></div>
+                                    )}
                             </div>
                         </div>
                         <div className="modal-footer">
