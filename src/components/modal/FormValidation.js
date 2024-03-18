@@ -36,7 +36,6 @@ const FormValidation = ( ) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setErrors(validate(values));
-    console.log(values)
     setIsSubmitted(true);
   };
 

@@ -2,19 +2,26 @@ import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import FormValidation, { validate } from "./FormValidation";
 import './styleModal.css'
+import { ToastContainer, toast } from 'react-toastify';
 
 const AddModal = ({ closeModal, getTodos }) => {
     const { errors, values, onInputChange, handleSubmit, isSubmitted } =
             FormValidation(validate);
+    const [loading, setIsLoading] = useState(false);
+    const notify = () => toast("Weldone, you have successfully added a todo");
 
     const onFormSubmit = async (obj) => {
+        setIsLoading(true);
         try {
             await axios.post('http://localhost:7000/api/todo/create', obj);
+            notify()
             getTodos()
             closeModal();
+            setIsLoading(false);
         } catch (error) {
             closeModal();
             console.error('Error:', error.message);
+            setIsLoading(false);
         }
     };
 
@@ -32,6 +39,7 @@ const AddModal = ({ closeModal, getTodos }) => {
                         <h5 className="modal-title">Add Task</h5>
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={closeModal}></button>
                     </div>
+                    <ToastContainer />
                     <form onSubmit={handleSubmit}>
                         <div className="modal-body">
                             <div className="mb-3">
@@ -66,7 +74,13 @@ const AddModal = ({ closeModal, getTodos }) => {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={closeModal}>Close</button>
-                            <button type="submit" className="btn btn-primary">Submit</button>
+                            {
+                                loading ? <button class="loading-btn" type="button" disabled>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Loading...
+                                </button> :
+                                <button type="submit" className="add-btn">Submit</button>
+                            }
                         </div>
                     </form>
                 </div>
